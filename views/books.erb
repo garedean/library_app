@@ -2,10 +2,9 @@
 
 <div class="row move-down">
   <div class="col-sm-6 col-sm-offset-3">
-    <form action="/books" method="post">
+    <form action="/books/search_results" method="post">
       <div class="form-inline">
         <div class="form-group">
-          <!--<label target="title" class="">Please search for a book:</label>-->
           <input id="title" name="title" class="form-control">
         </div>
         <button type="submit" class="btn btn-primary">Search!</button>
@@ -23,9 +22,22 @@
         <% @found_books.each() do |book| %>
           <li><a href="#"><%= book.title() %></a></li>
         <% end %>
-      </ul>    
+      </ul>
     <% else %>
       <p class="lead">Sorry, no books match your search.</p>
     <% end %>
+  </div>
+</div>
+<div class="row move-down">
+  <div class="col-sm-6 col-sm-offset-3">
+    <% if @book %>
+      <!-- <p class="lead">You just added <em><%= @book.title %></em> by <em><%= Author.find(id: @book.author_id).first.full_name %></em></p> -->
+      <p class="lead">You just added <em><%= @book.title %></em> by <em><%= @book.author %></em></p>
+    <% end %>
+  </div>
+</div>
+<div class="row move-down">
+  <div class="col-sm-6 col-sm-offset-3">
+    <a href="/books/new" class="btn btn-default" role="button">Add a book</a>
   </div>
 </div>

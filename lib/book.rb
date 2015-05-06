@@ -1,4 +1,5 @@
 require('pry')
+#require('author.rb')
 
 class Book
   attr_reader(:id, :title, :author_id)
@@ -18,6 +19,10 @@ class Book
       books << Book.new(id: nil, title: title, author_id: author_id)
     end
     books
+  end
+
+  def author
+    Author.find(id: @author_id).first.full_name
   end
 
   def save
