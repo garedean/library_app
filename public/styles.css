@@ -1,0 +1,14 @@
+.login-wrapper > p {
+  margin-bottom: 30px;
+}
+
+.login-wrapper a {
+  display: inline-block;
+  width: 100%;
+  font-size: 25px;
+  margin-bottom: 10px;
+}
+
+.move-down {
+  margin-top: 60px;
+}

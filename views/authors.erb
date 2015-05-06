@@ -1,0 +1,42 @@
+<h1 class="page-header text-center">Authors</h1>
+
+<div class="row move-down">
+  <div class="col-sm-6 col-sm-offset-3">
+    <form action="/authors" method="post">
+      <div class="form-inline">
+        <div class="form-group">
+          <input id="title" name="title" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Search!</button>
+      </div>
+    </form>
+  </div>
+</div>
+<br>
+<div class="row move-down">
+  <div class="col-sm-6 col-sm-offset-3">
+    <% if @authors.empty? %>
+      <p class="lead">The library has no authors added yet. <a href="/authors/new">Add one.</a></p>
+    <% elsif @authors.any? %>
+      <ul>
+        <% @authors.each() do |author| %>
+          <li><a href="#"><%= author.full_name %></a></li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="lead">Sorry, we couldn't find that author.</p>
+    <% end %>
+  </div>
+</div>
+
+<!-- <div class="row move-down">
+  <div class="col-sm-6 col-sm-offset-3">
+    <% if @author_id_1.==(@author_id_2)
+      author_id = @author_id_1
+      book = Book.new(id: nil, title: @title, author_id: author_id) %>
+      <p class="lead">Your book: <%= book.title %> was successfully added!</p>
+    <% else %>
+      <p class="lead">Sorry, there is no author by that name. Please add that author before adding their books. <a href="/authors/new">Add an author.</a></p></p>
+    <% end %>
+  </div>
+</div> -->
