@@ -1,6 +1,7 @@
 require('rspec')
 require('book')
 require('pg')
+require('pry')
 
 DB = PG.connect(dbname: 'library_test')
 
