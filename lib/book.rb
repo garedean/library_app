@@ -29,13 +29,30 @@ class Book
     title.==(other_book.title) && author_id.==(other_book.author_id)
   end
 
-  def self.find(target_id)
-    result = DB.exec("SELECT * FROM books WHERE id = #{target_id}")
-    id        = result.first["id"].to_i
-    title     = result.first["title"]
-    author_id = result.first["author_id"].to_i
+  def self.find(attributes)
+    id        = attributes.fetch(:id, nil)
+    title     = attributes.fetch(:title, nil)
+    author_id = attributes.fetch(:author_id, nil)
 
-    Book.new(id: id, title: title, author_id: author_id)
+    result = nil
+
+    if id
+      result = DB.exec("SELECT * FROM books WHERE id = #{id.to_i}")
+    elsif title
+      result = DB.exec("SELECT * FROM books WHERE title = '#{title}'")
+    elsif author_id
+      result = DB.exec("SELECT * FROM books WHERE author_id = #{author_id.to_i}")
+    end
+
+    unless result.num_tuples.zero?
+      id        = result.first["id"].to_i
+      title     = result.first["title"]
+      author_id = result.first["author_id"].to_i
+
+      [Book.new(id: id, title: title, author_id: author_id)]
+    else
+      []
+    end
   end
 
   def update(attributes)
