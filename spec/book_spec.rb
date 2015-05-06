@@ -45,7 +45,23 @@ describe(Book) do
       book1.save
       book2 = Book.new(id: nil, title: "Where the Wild Things Are", author_id: 2)
       book2.save
-      expect(Book.find(book1.id)).to(eq(book1))
+      expect(Book.find(id: book1.id)).to(eq([book1]))
+    end
+
+    it('will find a book from its title') do
+      book1 = Book.new(id: nil, title: "Count of Monte Cristo", author_id: 1)
+      book1.save
+      book2 = Book.new(id: nil, title: "Where the Wild Things Are", author_id: 2)
+      book2.save
+      expect(Book.find(title: book1.title)).to(eq([book1]))
+    end
+
+    it('will find a book from its author_id') do
+      book1 = Book.new(id: nil, title: "Count of Monte Cristo", author_id: 1)
+      book1.save
+      book2 = Book.new(id: nil, title: "Where the Wild Things Are", author_id: 2)
+      book2.save
+      expect(Book.find(author_id: book1.author_id)).to(eq([book1]))
     end
   end
 
