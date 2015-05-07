@@ -121,6 +121,7 @@ describe(Book) do
       book1.delete
       expect(Book.all).to(eq([]))
       expect(book1.authors).to(eq([]))
+      expect(book1.copies).to(eq(0))
     end
   end
 
@@ -134,6 +135,38 @@ describe(Book) do
       Book.clear
       expect(Book.all).to(eq([]))
       expect(book1.authors).to(eq([]))
+    end
+  end
+
+  describe('#copies') do
+    it('will return 1 when no additional copies of a book have been added') do
+      book1 = Book.new(id: nil, title: "Count of Monte Cristo")
+      book1.save
+      expect(book1.copies).to(eq(1))
+    end
+  end
+
+  describe('#create_copies') do
+    it('will create the specified number of copies of a book in the database') do
+      book1 = Book.new(id: nil, title: "Count of Monte Cristo")
+      book1.save
+      book1.create_copies(3)
+      expect(book1.copies).to(eq(4))
+    end
+  end
+
+  describe('#available_copies') do
+    it('will return an array of copies available for checkout') do
+      book1 = Book.new(id: nil, title: "Count of Monte Cristo")
+      book1.save
+      book1.create_copies(2)
+      patron1 = Patron.new(id: nil, first_name: "George", last_name: "Michael")
+      patron1.save
+      patron1.checkout([book1])
+      patron2 = Patron.new(id: nil, first_name: "George", last_name: "Michael")
+      patron2.save
+      patron2.checkout([book1])
+      expect(book1.available_copies).to(eq(1))
     end
   end
 end

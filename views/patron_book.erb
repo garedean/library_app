@@ -1,0 +1,28 @@
+<h1 class="page-header text-center"><%= @book.title %></h1>
+<p class="lead text-center">by
+  <% @book.authors.each_with_index do |author, index| %>
+    <% if author %>
+      <% if index == 1 %>
+        and
+      <% end %>
+      <%= author.full_name %>
+    <% end %>
+  <% end %>
+</p>
+
+<div class="row move-down">
+  <div class="col-sm-6 col-sm-offset-3">
+    <form actions="/patrons/books" method="post">
+      <input type="hidden" name="_method" value="patch">
+      <input type="hidden" name="book_id" value="<%= @book.id %>">
+        <% if @book.available_copies > 0 %>
+          <button class="btn btn-success stretch">Checkout</button>
+        <% else %>
+          <button class="btn btn-success stretch" disabled="disabled">Checkout</button>
+          <p class="lead text-center">Sorry, this book is not available at this time</p>
+        <% end %>
+    </form>
+  </div>
+</div>
+
+<a href="/books/lookup" class="back-link">< Back</a>

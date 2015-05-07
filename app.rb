@@ -116,6 +116,65 @@ patch('/books/:id') do
   redirect to("/books/#{id}")
 end
 
-get('/visiter_home') do
-  erb(:visiter_home)
+get('/patron/home') do
+  erb(:patron_home)
+end
+
+get('/patron/lookup') do
+  erb(:patron_lookup)
+end
+
+post('/patron/lookup/results') do
+  title = params.fetch("title")
+
+  @found_books = title.empty? ? Book.all : Book.find(title: title)
+
+  erb(:patron_book_results)
+end
+
+get('/patrons/books/:id') do
+  id    = params["id"].to_i
+  @book = Book.find(id: id).first
+  erb(:patron_book)
+end
+
+patch('/patrons/books/:book_id') do
+  book_id = params["book_id"].to_i
+  book = Book.find(id: book_id)
+
+
+  redirect to('/patron/home')
+end
+
+get('/patrons/login') do
+  erb(:patron_login)
+end
+
+get('/patrons/:id') do
+  id = params.fetch("id").to_i
+
+  erb(:patron_home)
+end
+
+post('/patrons') do
+  first_name = params.fetch("first_name")
+  last_name = params.fetch("last_name")
+  patron = Patron.find(first_name: first_name, last_name: last_name)
+  if patron.empty?
+    patron = Patron.new(first_name: first_name, last_name: last_name)
+    patron.save
+    redirect to("/patrons/new/#{patron.id}")
+  else
+    redirect to("/patrons/#{patron.first.id}")
+  end
+end
+
+get('/patrons/new/:id') do
+  @patron = Patron.find(id: params.fetch('id').to_i)
+  erb(:patron_form)
+end
+
+post('/patrons/new/:id') do
+  @patron.delete
+  erb(:patron_login)
 end

@@ -33,6 +33,7 @@ class Book
   def save
     result = DB.exec("INSERT INTO books (title) VALUES ('#{@title}') RETURNING id;")
     @id = result.first['id'].to_i
+    DB.exec("INSERT INTO copies (book_id, checked_out) VALUES (#{@id}, 'f');")
   end
 
   def self.clear
@@ -58,6 +59,7 @@ class Book
   def delete
     DB.exec("DELETE FROM books WHERE id = #{@id};")
     DB.exec("DELETE FROM books_authors WHERE book_id = #{@id};")
+    DB.exec("DELETE FROM copies WHERE book_id = #{@id}")
   end
 
   def self.all
@@ -91,5 +93,21 @@ class Book
     else
       []
     end
+  end
+
+  def copies
+    result = DB.exec("SELECT COUNT(*) FROM copies WHERE book_id = #{@id}")
+    result.first["count"].to_i
+  end
+
+  def create_copies(count)
+    count.times do
+      DB.exec("INSERT INTO copies (book_id, checked_out) VALUES (#{@id}, 'f');")
+    end
+  end
+
+  def available_copies
+    result = DB.exec("SELECT COUNT(*) FROM copies WHERE book_id = #{@id} AND checked_out='f'")
+    result.first["count"].to_i
   end
 end

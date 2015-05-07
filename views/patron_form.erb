@@ -1,0 +1,20 @@
+<h1 class="page-header text-center">Add a New Member</h1>
+
+<div class="row move-down">
+  <div class="col-sm-6 col-sm-offset-3">
+    <form action="/patrons" method="post">
+      <label>Member Name</label>
+
+      <div class="form-group form-inline no-wrap">
+        <input id="first_name1" name="first_name" class="form-control half-width" value="<%= @patron.first.first_name %>" required>
+        <input id="last_name1" name="last_name" class="form-control half-width" value="<%= @patron.first.last_name %>" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+    <form action="/patrons/new/<%= @patron.first.id %>" method="post">
+      <button type="submit" class="btn btn-primary">Cancel</button>
+    </form>
+  </div>
+</div>
+
+<a href="/books/home" class="back-link">< Back</a>
