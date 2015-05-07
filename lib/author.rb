@@ -1,25 +1,22 @@
 require('pry')
 
 class Author
-  attr_reader(:id, :first_name, :last_name)
+  attr_reader(:id, :first_name, :last_name, :full_name)
 
   def initialize(attributes)
     @id         = attributes[:id]
     @first_name = attributes[:first_name]
     @last_name  = attributes[:last_name]
+    @full_name  = "#{@first_name} #{@last_name}"
   end
 
   def ==(other_author)
     first_name.==(other_author.first_name) && last_name.==(other_author.last_name)
   end
 
-  def full_name
-    "#{@first_name} #{@last_name}"
-  end
-
   def save
     result = DB.exec("INSERT INTO authors (first_name, last_name) VALUES ('#{@first_name}', '#{@last_name}') RETURNING id;")
-    @id = result.first['id']
+    @id = result.first['id'].to_i
   end
 
   def self.clear
@@ -63,5 +60,29 @@ class Author
       authors << Author.new(id: id, first_name: first_name, last_name: last_name)
     end
     authors
+  end
+
+  def update(options)
+    first_name = options.fetch(:first_name, nil)
+    last_name  = options.fetch(:last_name, nil)
+
+    if first_name
+      DB.exec("UPDATE authors SET first_name = '#{first_name}' WHERE id = #{@id};")
+      @first_name = first_name
+    end
+    if last_name
+      DB.exec("UPDATE authors SET last_name = '#{last_name}' WHERE id = #{@id};")
+      @last_name = last_name
+    end
+  end
+
+  def books
+    returned_book_ids = DB.exec("SELECT book_id FROM books_authors WHERE author_id = #{@id};")
+    books = []
+
+    returned_book_ids.each do |id|
+      books << Book.find(id: id["book_id"].to_i).first
+    end
+    books
   end
 end

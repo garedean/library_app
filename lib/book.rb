@@ -2,48 +2,62 @@ require('pry')
 #require('author.rb')
 
 class Book
-  attr_reader(:id, :title, :author_id)
+  attr_reader(:id, :title)
 
   def initialize(attributes)
     @title     = attributes[:title]
-    @author_id = attributes[:author_id]
     @id        = attributes[:id]
   end
 
   def ==(other_book)
-    title.==(other_book.title) && author_id.==(other_book.author_id)
+    title.==(other_book.title)
   end
 
-  def author(option = nil)
-    author = Author.find(id: @author_id).first
-    if option == :first_name
-      return author.first_name
-    elsif option == :last_name
-      return author.last_name
-    elsif option == :full_name
-      return author.full_name
+  def add_author(authors)
+    authors.each do |author|
+      DB.exec("INSERT INTO books_authors (book_id, author_id) VALUES (#{@id}, #{author.id})")
     end
-    author.full_name
+  end
+
+  def authors
+    returned_author_ids = DB.exec("SELECT author_id FROM books_authors WHERE book_id = #{@id};")
+    authors = []
+
+    returned_author_ids.each do |author_id|
+      author = Author.find(id: author_id["author_id"].to_i)
+      authors << author.first
+    end
+    authors
   end
 
   def save
-    result = DB.exec("INSERT INTO books (title, author_id) VALUES ('#{@title}', #{@author_id}) RETURNING id;")
+    result = DB.exec("INSERT INTO books (title) VALUES ('#{@title}') RETURNING id;")
     @id = result.first['id'].to_i
   end
 
   def self.clear
     DB.exec("DELETE FROM books;")
+    DB.exec("DELETE FROM books_authors;")
   end
 
   def update(attributes)
-    @title     = attributes.fetch(:title, @title)
-    @author_id = attributes.fetch(:author_id, @author_id)
-    DB.exec("UPDATE books SET title = '#{title}' WHERE id = #{@id};")
-    DB.exec("UPDATE books SET author_id = #{author_id} WHERE id = #{@id};")
+    @title     = attributes.fetch(:title, nil)
+    @authors   = attributes.fetch(:authors, nil)
+
+    if @title
+      DB.exec("UPDATE books SET title = '#{title}' WHERE id = #{@id};")
+    end
+
+    if @authors
+      # Delete all rows from books_authors for this book
+      DB.exec("DELETE FROM books_authors WHERE book_id = #{@id};")
+      add_author(@authors)
+    end
   end
 
   def delete
     DB.exec("DELETE FROM books WHERE id = #{@id};")
+    DB.exec("DELETE FROM books_authors WHERE book_id = #{@id};")
   end
 
   def self.all
@@ -51,9 +65,8 @@ class Book
     books = []
     returned_books.each do |book|
       title     = book["title"]
-      author_id = book["author_id"].to_i
       id        = book["id"].to_i
-      books << Book.new(id: id, title: title, author_id: author_id)
+      books << Book.new(id: id, title: title)
     end
     books
   end
@@ -61,7 +74,6 @@ class Book
   def self.find(attributes)
     id        = attributes.fetch(:id, nil)
     title     = attributes.fetch(:title, nil)
-    author_id = attributes.fetch(:author_id, nil)
 
     result = nil
 
@@ -69,16 +81,13 @@ class Book
       result = DB.exec("SELECT * FROM books WHERE id = #{id.to_i}")
     elsif title
       result = DB.exec("SELECT * FROM books WHERE title = '#{title}'")
-    elsif author_id
-      result = DB.exec("SELECT * FROM books WHERE author_id = #{author_id.to_i}")
     end
 
     unless result.num_tuples.zero?
       id        = result.first["id"].to_i
       title     = result.first["title"]
-      author_id = result.first["author_id"].to_i
 
-      [Book.new(id: id, title: title, author_id: author_id)]
+      [Book.new(id: id, title: title)]
     else
       []
     end

@@ -1,9 +1,25 @@
 require('spec_helper')
 
 describe(Author) do
+  describe('#id') do
+    it("will return an author's id") do
+      author = Author.new(id: nil, first_name: "Alexander", last_name: "Dumas")
+      author.save
+      expect(author.id).to(be_an_instance_of(Fixnum))
+    end
+  end
+
   describe('.all') do
     it('will return an empty array when no authors exist') do
       expect(Author.all()).to(eq([]))
+    end
+
+    it('will return an array of books when books exist') do
+      author1 = Author.new(id: nil, first_name: "Alexander", last_name: "Dumas")
+      author1.save
+      author2 = Author.new(id: nil, first_name: "Alexander", last_name: "Dumas")
+      author2.save
+      expect(Author.all).to(eq([author1, author2]))
     end
   end
 
@@ -74,23 +90,43 @@ describe(Author) do
       expect(Author.find(last_name: author1.last_name)).to(eq([author1]))
     end
   end
-  #
-  # describe('#update') do
-  #   it("will update a book's title") do
-  #     book1 = Book.new(id: nil, title: "Count of Monte Cristo", author_id: 1)
-  #     book1.save
-  #     book1.update(title: "Count of Monte Cristo V2")
-  #     expect(book1.title).to(eq("Count of Monte Cristo V2"))
-  #   end
-  #
-  #   it("will update a book's author") do
-  #     book1 = Book.new(id: nil, title: "Count of Monte Cristo", author_id: 1)
-  #     book1.save
-  #     book1.update(author_id: 2)
-  #     expect(book1.author_id).to(eq(2))
-  #   end
-  # end
-  #
+
+  describe('#update') do
+    it("will update an author's first_name") do
+      author = Author.new(id: nil, first_name: "Alexander", last_name: "Dumas")
+      author.save
+      author.update(first_name: "Jimmy")
+      expect(author.first_name).to(eq("Jimmy"))
+    end
+
+    it("will update an author's last_name") do
+      author = Author.new(id: nil, first_name: "Alexander", last_name: "Dumas")
+      author.save
+      author.update(last_name: "Dean")
+      expect(author.last_name).to(eq("Dean"))
+    end
+  end
+
+  describe('#books') do
+    it('will return an empty array when author has no books') do
+      author = Author.new(id: nil, first_name: "Alexander", last_name: "Dumas")
+      author.save
+      expect(author.books).to(eq([]))
+    end
+
+    it('will return and array of the books for a given author') do
+      book1 = Book.new(id: nil, title: "Count of Monte Cristo")
+      book1.save
+      book2 = Book.new(id: nil, title: "Where the Wild Things Are")
+      book2.save
+      author1 = Author.new(id: nil, first_name: "Alexander", last_name: "Dumas")
+      author1.save
+      book1.add_author([author1])
+      book2.add_author([author1])
+      expect(author1.books).to(eq([book1, book2]))
+    end
+  end
+
   # describe('#delete') do
   #   it('will delete a book from the database') do
   #     book1 = Book.new(id: nil, title: "Count of Monte Cristo", author_id: 1)
