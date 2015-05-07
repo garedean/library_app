@@ -19,7 +19,7 @@
     <% elsif @found_books.any? %>
       <ul>
         <% @found_books.each() do |book| %>
-          <li><a href="/books/<%= book.id %>"><%= book.title() %> by <%= book.author %></a></li>
+          <li><a href="/books/<%= book.id %>"><%= book.title() %></a></li>
         <% end %>
       </ul>
     <% else %>

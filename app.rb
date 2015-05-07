@@ -35,16 +35,25 @@ end
 
 post('/books') do
   title = params.fetch("title")
-  first_name = params.fetch('first_name')
-  last_name = params.fetch('last_name')
+  first_name1 = params.fetch('first_name1', nil)
+  last_name1 = params.fetch('last_name1', nil)
+  first_name2 = params.fetch('first_name2', nil)
+  last_name2 = params.fetch('last_name2', nil)
 
-  author = Author.find(first_name: first_name, last_name: last_name)
-  if author = []
-    author = Author.new(id: nil, first_name: first_name, last_name: last_name)
-    author.save
-  end
-  @book = Book.new(id: nil, title: title, author_id: author.id.to_i)
+  @book = Book.new(id: nil, title: title)
   @book.save
+  author1 = Author.find(first_name: first_name1, last_name: last_name1)
+  author2 = Author.find(first_name: first_name2, last_name: last_name2)
+  if author1 == []
+    author1 = Author.new(id: nil, first_name: first_name1, last_name: last_name1)
+    author1.save
+    @book.add_author([author1])
+  end
+  if author2 == []
+    author2 = Author.new(id: nil, first_name: first_name2, last_name: last_name2)
+    author2.save
+    @book.add_author([author2])
+  end
 
   @found_books = Book.find(title: params.fetch('title', []))
   redirect to("/books/#{@book.id}")
