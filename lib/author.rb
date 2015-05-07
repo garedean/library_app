@@ -9,12 +9,21 @@ class Author
     @last_name  = attributes[:last_name]
   end
 
+  def ==(other_author)
+    first_name.==(other_author.first_name) && last_name.==(other_author.last_name)
+  end
+
   def full_name
     "#{@first_name} #{@last_name}"
   end
 
-  def ==(other_author)
-    first_name.==(other_author.first_name) && last_name.==(other_author.last_name)
+  def save
+    result = DB.exec("INSERT INTO authors (first_name, last_name) VALUES ('#{@first_name}', '#{@last_name}') RETURNING id;")
+    @id = result.first['id']
+  end
+
+  def self.clear
+    DB.exec("DELETE FROM authors;")
   end
 
   def self.all
@@ -27,11 +36,6 @@ class Author
       authors << Author.new(id: id, first_name: first_name, last_name: last_name)
     end
     authors
-  end
-
-  def save
-    result = DB.exec("INSERT INTO authors (first_name, last_name) VALUES ('#{@first_name}', '#{@last_name}') RETURNING id;")
-    @id = result.first['id']
   end
 
   def self.find(attributes)

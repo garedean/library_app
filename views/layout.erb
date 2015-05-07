@@ -4,11 +4,15 @@
     <meta charset="utf-8">
     <title>Library App</title>
     <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
-    <link rel='stylesheet' href='./styles.css'>
+    <link rel='stylesheet' href='/styles.css'>
   </head>
   <body>
+    <a href="/" class="top-left">The Library App</a>
+
     <div class="container">
       <%= yield %>
     </div>
+
+    <a href="/reset" class="bottom-left">Reset</a>
   </body>
 </html>

@@ -1,0 +1,19 @@
+<h1 class="page-header text-center">Book Lookup</h1>
+
+<div class="row move-down">
+  <div class="col-sm-6 col-sm-offset-3">
+    <% if Book.all.empty? %>
+    <p class="lead text-center">The library is currently empty. <a href="/books/new" class="btn btn-primary outline stretch" role="button">Add a book</a></p>
+    <% else %>
+      <form action="/books/lookup/results" method="post">
+        <div class="form-group">
+          <label target="title">Search for a book:</label>
+          <input id="title" name="title" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Search!</button>
+      </form>
+    <% end %>
+  </div>
+</div>
+
+<a href="/books/home" class="back-link">< Back</a>

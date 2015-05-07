@@ -12,8 +12,24 @@ get('/') do
   erb(:index)
 end
 
-get('/books') do
+get('/reset') do
+  Book.clear
+  Author.clear
+  redirect to('/')
+end
+
+get('/books/home') do
   @found_books = Book.find(title: params.fetch('title', []))
+  erb(:books_home)
+end
+
+get('/books/new') do
+  erb(:book_form)
+end
+
+get('/books') do
+  @found_books = Book.all
+
   erb(:books)
 end
 
@@ -31,23 +47,35 @@ post('/books') do
   @book.save
 
   @found_books = Book.find(title: params.fetch('title', []))
-  erb(:books)
+  redirect to("/books/#{@book.id}")
 end
 
-post('/books/search_results') do
+get('/books/lookup') do
+  erb(:book_lookup)
+end
+
+post('/books/lookup/results') do
   title = params.fetch("title")
 
-  @found_books = Book.find(title: title)
+  #redirect to('/books') if title.empty?
 
-  erb(:books)
+  @found_books = title.empty? ? Book.all : Book.find(title: title)
+
+  erb(:book_results)
 end
 
-get('/patrons') do
-  erb(:patrons)
+get('/books/:id') do
+  id    = params["id"].to_i
+  @book = Book.find(id: id).first
+  erb(:book)
 end
 
-get('/books/new') do
-  erb(:book_form)
+delete('/books/:id') do
+  id = params["id"].to_i
+  book = Book.find(id: id).first
+  book.delete
+
+  redirect to('/books/lookup')
 end
 
 post('/authors') do
@@ -56,4 +84,19 @@ post('/authors') do
   @author = Author.new(id: nil, first_name: first_name, last_name: last_name)
   @author.save()
   erb(:authors)
+end
+
+patch('/books/:id') do
+  id                = params['id'].to_i
+  title             = params['title']
+  author_first_name = params['author_first_name']
+  author_last_name  = params['author_last_name']
+
+  book = Book.find(id: id).first
+  book.update(title: title)
+  redirect to('/books/lookup')
+end
+
+get('/visiter_home') do
+  erb(:visiter_home)
 end

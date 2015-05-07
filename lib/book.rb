@@ -10,19 +10,20 @@ class Book
     @id        = attributes[:id]
   end
 
-  def self.all
-    returned_books = DB.exec("SELECT * FROM books;")
-    books = []
-    returned_books.each do |book|
-      title   = book["title"]
-      author_id = book["author_id"].to_i
-      books << Book.new(id: nil, title: title, author_id: author_id)
-    end
-    books
+  def ==(other_book)
+    title.==(other_book.title) && author_id.==(other_book.author_id)
   end
 
-  def author
-    Author.find(id: @author_id).first.full_name
+  def author(option = nil)
+    author = Author.find(id: @author_id).first
+    if option == :first_name
+      return author.first_name
+    elsif option == :last_name
+      return author.last_name
+    elsif option == :full_name
+      return author.full_name
+    end
+    author.full_name
   end
 
   def save
@@ -30,8 +31,31 @@ class Book
     @id = result.first['id'].to_i
   end
 
-  def ==(other_book)
-    title.==(other_book.title) && author_id.==(other_book.author_id)
+  def self.clear
+    DB.exec("DELETE FROM books;")
+  end
+
+  def update(attributes)
+    @title     = attributes.fetch(:title, @title)
+    @author_id = attributes.fetch(:author_id, @author_id)
+    DB.exec("UPDATE books SET title = '#{title}' WHERE id = #{@id};")
+    DB.exec("UPDATE books SET author_id = #{author_id} WHERE id = #{@id};")
+  end
+
+  def delete
+    DB.exec("DELETE FROM books WHERE id = #{@id};")
+  end
+
+  def self.all
+    returned_books = DB.exec("SELECT * FROM books;")
+    books = []
+    returned_books.each do |book|
+      title     = book["title"]
+      author_id = book["author_id"].to_i
+      id        = book["id"].to_i
+      books << Book.new(id: id, title: title, author_id: author_id)
+    end
+    books
   end
 
   def self.find(attributes)
@@ -58,16 +82,5 @@ class Book
     else
       []
     end
-  end
-
-  def update(attributes)
-    @title     = attributes.fetch(:title, @title)
-    @author_id = attributes.fetch(:author_id, @author_id)
-    DB.exec("UPDATE books SET title = '#{title}' WHERE id = #{@id};")
-    DB.exec("UPDATE books SET author_id = #{author_id} WHERE id = #{@id};")
-  end
-
-  def delete
-    DB.exec("DELETE FROM books WHERE id = #{@id};")
   end
 end

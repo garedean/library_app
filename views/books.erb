@@ -1,43 +1,19 @@
-<h1 class="page-header text-center">Books</h1>
+<h1 class="page-header text-center">All Books</h1>
 
-<div class="row move-down">
-  <div class="col-sm-6 col-sm-offset-3">
-    <form action="/books/search_results" method="post">
-      <div class="form-inline">
-        <div class="form-group">
-          <input id="title" name="title" class="form-control">
-        </div>
-        <button type="submit" class="btn btn-primary">Search!</button>
-      </div>
-    </form>
-  </div>
-</div>
-<br>
-<div class="row move-down">
+<div class="row move-down books-container">
   <div class="col-sm-6 col-sm-offset-3">
     <% if Book.all.empty? %>
-      <p class="lead">The library is currently empty. <a href="/books/new">Add a book.</a></p>
+      <p class="lead text-center">The library is currently empty. <a href="/books/new">Add a book.</a></p>
     <% elsif @found_books.any? %>
       <ul>
         <% @found_books.each() do |book| %>
-          <li><a href="#"><%= book.title() %></a></li>
+          <li><a href="/books/<%= book.id %>"><%= book.title() %> by <%= book.author %></a></li>
         <% end %>
       </ul>
     <% else %>
-      <p class="lead">Sorry, no books match your search.</p>
+      <p class="lead text-center">Sorry, no books match your search.</p>
     <% end %>
   </div>
 </div>
-<div class="row move-down">
-  <div class="col-sm-6 col-sm-offset-3">
-    <% if @book %>
-      <!-- <p class="lead">You just added <em><%= @book.title %></em> by <em><%= Author.find(id: @book.author_id).first.full_name %></em></p> -->
-      <p class="lead">You just added <em><%= @book.title %></em> by <em><%= @book.author %></em></p>
-    <% end %>
-  </div>
-</div>
-<div class="row move-down">
-  <div class="col-sm-6 col-sm-offset-3">
-    <a href="/books/new" class="btn btn-default" role="button">Add a book</a>
-  </div>
-</div>
+
+<a href="/books/home" class="back-link">< Back</a>
