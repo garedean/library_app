@@ -39,17 +39,18 @@ post('/books') do
   last_name1 = params.fetch('last_name1', nil)
   first_name2 = params.fetch('first_name2', nil)
   last_name2 = params.fetch('last_name2', nil)
-
   @book = Book.new(id: nil, title: title)
   @book.save
+
   author1 = Author.find(first_name: first_name1, last_name: last_name1)
   author2 = Author.find(first_name: first_name2, last_name: last_name2)
-  if author1 == []
+
+  if author1.empty? && first_name1 != "" && last_name1 != ""
     author1 = Author.new(id: nil, first_name: first_name1, last_name: last_name1)
     author1.save
     @book.add_author([author1])
   end
-  if author2 == []
+  if author2.empty? && first_name2 != "" && last_name2 != ""
     author2 = Author.new(id: nil, first_name: first_name2, last_name: last_name2)
     author2.save
     @book.add_author([author2])
@@ -98,12 +99,21 @@ end
 patch('/books/:id') do
   id                = params['id'].to_i
   title             = params['title']
-  author_first_name = params['author_first_name']
-  author_last_name  = params['author_last_name']
+  first_name1       = params['first_name1']
+  last_name1        = params['last_name1']
+  first_name2       = params.fetch('first_name2', nil)
+  last_name2        = params.fetch('last_name2', nil)
+
 
   book = Book.find(id: id).first
   book.update(title: title)
-  redirect to('/books/lookup')
+
+  book.authors[0].update(first_name: first_name1, last_name: last_name1)
+  if first_name2 && last_name2
+    book.authors[1].update(first_name: first_name2, last_name: last_name2)
+  end
+
+  redirect to("/books/#{id}")
 end
 
 get('/visiter_home') do
